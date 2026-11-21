@@ -1,9 +1,13 @@
+import { useLiveQuery } from 'dexie-react-hooks';
 import { useEffect } from 'react';
 import { Link, NavLink, Outlet } from 'react-router-dom';
+import { calculateStreak } from '@/domain/stats';
+import { db } from '@/infrastructure/db';
 import {
   applyAtmosphereToDocument,
   useAtmosphereStore,
 } from '@/state/useAtmosphereStore';
+import { useTimerStore } from '@/state/useTimerStore';
 
 const NAV_ITEMS = [
   { to: '/', label: 'Temporizador', mobileLabel: 'Timer', icon: 'timer' },
@@ -13,6 +17,9 @@ const NAV_ITEMS = [
 
 export function AppShell() {
   const atmosphere = useAtmosphereStore((s) => s.atmosphere);
+  const timerStatus = useTimerStore((s) => s.snapshot.status);
+  const sessions = useLiveQuery(() => db.sessions.toArray(), [], []);
+  const streak = calculateStreak(sessions);
 
   useEffect(() => {
     applyAtmosphereToDocument(atmosphere);
@@ -47,7 +54,7 @@ export function AppShell() {
                 to={item.to}
                 end={item.to === '/'}
                 className={({ isActive }) =>
-                  `flex items-center gap-3.5 rounded-full px-4 py-2.5 text-sm font-medium transition-colors duration-150 ${
+                  `flex items-center justify-between rounded-full px-4 py-2.5 text-sm font-medium transition-colors duration-150 ${
                     isActive
                       ? 'bg-secondary-container text-on-secondary-container'
                       : 'text-on-surface-variant hover:bg-surface-container'
@@ -56,18 +63,26 @@ export function AppShell() {
               >
                 {({ isActive }) => (
                   <>
-                    <span
-                      className="material-symbols-outlined text-xl"
-                      style={
-                        isActive
-                          ? { fontVariationSettings: "'FILL' 1" }
-                          : undefined
-                      }
-                      aria-hidden="true"
-                    >
-                      {item.icon}
+                    <span className="flex items-center gap-3.5">
+                      <span
+                        className="material-symbols-outlined text-xl"
+                        style={
+                          isActive
+                            ? { fontVariationSettings: "'FILL' 1" }
+                            : undefined
+                        }
+                        aria-hidden="true"
+                      >
+                        {item.icon}
+                      </span>
+                      <span>{item.label}</span>
                     </span>
-                    <span>{item.label}</span>
+                    {item.to === '/' && timerStatus === 'running' && (
+                      <span
+                        className="h-2 w-2 rounded-full bg-primary"
+                        aria-label="Temporizador en curso"
+                      />
+                    )}
                   </>
                 )}
               </NavLink>
@@ -92,7 +107,7 @@ export function AppShell() {
               Racha actual
             </span>
             <span className="font-headline text-base font-semibold tabular-nums text-tertiary">
-              0 días
+              {streak} {streak === 1 ? 'día' : 'días'}
             </span>
           </div>
           <span
@@ -146,7 +161,7 @@ export function AppShell() {
             to={item.to}
             end={item.to === '/'}
             className={({ isActive }) =>
-              `flex flex-col items-center gap-0.5 rounded-full px-4 py-1 text-xs font-medium transition-colors duration-150 ${
+              `relative flex flex-col items-center gap-0.5 rounded-full px-4 py-1 text-xs font-medium transition-colors duration-150 ${
                 isActive
                   ? 'bg-secondary-container text-on-secondary-container'
                   : 'text-on-surface-variant'
@@ -167,6 +182,9 @@ export function AppShell() {
                   {item.icon}
                 </span>
                 <span>{item.mobileLabel}</span>
+                {item.to === '/' && timerStatus === 'running' && (
+                  <span className="absolute top-1 right-2.5 h-2 w-2 rounded-full bg-primary" />
+                )}
               </>
             )}
           </NavLink>
