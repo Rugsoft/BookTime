@@ -97,5 +97,5 @@
 - [x] Choose the tech stack (Vite + React + TypeScript, Tailwind CSS, Dexie.js, `vite-plugin-pwa`, React Router, Zustand, Vitest).
 - [x] Define the initial set of genre themes and screen designs in Stitch (`BookTime Editorial` + 4 core views + 4 genre atmospheres).
 - [x] Scaffold the Vite + React + TypeScript project and set up design tokens from Stitch.
-- [ ] Implement core domain logic with Vitest (daily goal planner, auto-deduction, streak calculation).
+- [x] Implement core domain logic with Vitest (daily goal planner, auto-deduction, streak calculation).
 - [ ] Build the 4 core views and genre atmosphere switcher.
