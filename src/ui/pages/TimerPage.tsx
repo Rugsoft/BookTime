@@ -18,6 +18,12 @@ import {
   recordReadingSession,
   type RecordSessionResult,
 } from '@/infrastructure/readingRepository';
+import {
+  playCompletionChime,
+  readSoundPreference,
+  saveSoundPreference,
+  unlockAudioContext,
+} from '@/infrastructure/soundAlert';
 import { useTimerStore } from '@/state/useTimerStore';
 import { AtmosphereSwitcher } from '@/ui/components/AtmosphereSwitcher';
 
@@ -43,7 +49,18 @@ export function TimerPage() {
 
   const [nowMs, setNowMs] = useState(() => Date.now());
   const [lastResult, setLastResult] = useState<RecordSessionResult | null>(null);
+  const [soundEnabled, setSoundEnabled] = useState(() => readSoundPreference());
   const autoFinishingRef = useRef(false);
+
+  function toggleSound() {
+    const next = !soundEnabled;
+    setSoundEnabled(next);
+    saveSoundPreference(next);
+    if (next) {
+      unlockAudioContext();
+      playCompletionChime();
+    }
+  }
 
   const readingBooks = useLiveQuery(
     () => db.books.where('status').equals('reading').toArray(),
@@ -139,6 +156,9 @@ export function TimerPage() {
       !autoFinishingRef.current
     ) {
       autoFinishingRef.current = true;
+      if (soundEnabled) {
+        playCompletionChime();
+      }
       markCompleted();
       const plannedMinutes = Math.max(1, Math.round(snapshot.targetSeconds / 60));
       void handleFinishSession(plannedMinutes).finally(() => {
@@ -149,6 +169,7 @@ export function TimerPage() {
     snapshot.status,
     snapshot.targetSeconds,
     remainingSeconds,
+    soundEnabled,
     markCompleted,
     handleFinishSession,
   ]);
@@ -242,39 +263,62 @@ export function TimerPage() {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
         {/* Timer Card */}
         <article className="flex flex-col items-center gap-6 rounded-2xl border border-outline-variant bg-surface-container-lowest p-6 sm:p-8 lg:col-span-7">
-          {/* Mode selector */}
-          <div
-            role="tablist"
-            aria-label="Modo de temporizador"
-            className="inline-flex rounded-full border border-outline-variant bg-surface-container-low p-1"
-          >
+          {/* Mode selector + Sound alert toggle */}
+          <div className="flex w-full flex-wrap items-center justify-between gap-3">
+            <div
+              role="tablist"
+              aria-label="Modo de temporizador"
+              className="inline-flex rounded-full border border-outline-variant bg-surface-container-low p-1"
+            >
+              <button
+                type="button"
+                role="tab"
+                aria-selected={mode === 'guided'}
+                disabled={isRunningOrPaused}
+                onClick={() => setMode('guided')}
+                className={`rounded-full px-4 py-1.5 text-xs font-medium transition-colors duration-150 disabled:opacity-50 ${
+                  mode === 'guided'
+                    ? 'bg-secondary-container text-on-secondary-container'
+                    : 'text-on-surface-variant hover:text-on-surface'
+                }`}
+              >
+                Meta diaria
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={mode === 'free'}
+                disabled={isRunningOrPaused}
+                onClick={() => setMode('free')}
+                className={`rounded-full px-4 py-1.5 text-xs font-medium transition-colors duration-150 disabled:opacity-50 ${
+                  mode === 'free'
+                    ? 'bg-secondary-container text-on-secondary-container'
+                    : 'text-on-surface-variant hover:text-on-surface'
+                }`}
+              >
+                Timer libre
+              </button>
+            </div>
+
             <button
               type="button"
-              role="tab"
-              aria-selected={mode === 'guided'}
-              disabled={isRunningOrPaused}
-              onClick={() => setMode('guided')}
-              className={`rounded-full px-4 py-1.5 text-xs font-medium transition-colors duration-150 disabled:opacity-50 ${
-                mode === 'guided'
-                  ? 'bg-secondary-container text-on-secondary-container'
-                  : 'text-on-surface-variant hover:text-on-surface'
+              aria-pressed={soundEnabled}
+              onClick={toggleSound}
+              title={
+                soundEnabled
+                  ? 'Aviso sonoro activado (click para silenciar)'
+                  : 'Aviso sonoro silenciado (click para activar y probar)'
+              }
+              className={`inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs font-medium transition-colors duration-150 ${
+                soundEnabled
+                  ? 'border-outline-variant bg-surface-container-low text-on-surface hover:bg-surface-container'
+                  : 'border-outline-variant bg-surface-container-lowest text-on-surface-variant hover:bg-surface-container'
               }`}
             >
-              Meta diaria
-            </button>
-            <button
-              type="button"
-              role="tab"
-              aria-selected={mode === 'free'}
-              disabled={isRunningOrPaused}
-              onClick={() => setMode('free')}
-              className={`rounded-full px-4 py-1.5 text-xs font-medium transition-colors duration-150 disabled:opacity-50 ${
-                mode === 'free'
-                  ? 'bg-secondary-container text-on-secondary-container'
-                  : 'text-on-surface-variant hover:text-on-surface'
-              }`}
-            >
-              Timer libre
+              <span className="material-symbols-outlined text-base" aria-hidden="true">
+                {soundEnabled ? 'notifications_active' : 'notifications_off'}
+              </span>
+              <span>{soundEnabled ? 'Aviso sonoro' : 'Silenciado'}</span>
             </button>
           </div>
 
@@ -365,6 +409,7 @@ export function TimerPage() {
                 type="button"
                 onClick={() => {
                   setLastResult(null);
+                  if (soundEnabled) unlockAudioContext();
                   start(plannedTargetSeconds);
                 }}
                 className="inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3 text-sm font-medium text-on-primary transition-colors duration-150 hover:bg-primary-container"
@@ -392,7 +437,10 @@ export function TimerPage() {
             {snapshot.status === 'paused' && (
               <button
                 type="button"
-                onClick={resume}
+                onClick={() => {
+                  if (soundEnabled) unlockAudioContext();
+                  resume();
+                }}
                 className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-on-primary hover:bg-primary-container"
               >
                 <span className="material-symbols-outlined text-xl" aria-hidden="true">
