@@ -1,0 +1,302 @@
+@import "tailwindcss";
+
+/* ============================================================================
+   BookTime Editorial — Design Tokens & Genre Atmospheres (from Stitch)
+   ============================================================================ */
+
+:root,
+[data-atmosphere="editorial"] {
+  --bt-surface: #fff8f6;
+  --bt-surface-container-lowest: #ffffff;
+  --bt-surface-container-low: #fff1eb;
+  --bt-surface-container: #faebe5;
+  --bt-surface-container-high: #f4e5e0;
+  --bt-surface-container-highest: #eee0da;
+  --bt-on-surface: #211a17;
+  --bt-on-surface-variant: #53433c;
+
+  --bt-primary: #6f3312;
+  --bt-on-primary: #ffffff;
+  --bt-primary-container: #8c4a27;
+  --bt-on-primary-container: #ffc9b0;
+
+  --bt-secondary: #7a5645;
+  --bt-on-secondary: #ffffff;
+  --bt-secondary-container: #fdcdb7;
+  --bt-on-secondary-container: #795544;
+
+  --bt-tertiary: #004c55;
+  --bt-on-tertiary: #ffffff;
+  --bt-tertiary-container: #006671;
+  --bt-on-tertiary-container: #95e1ed;
+
+  --bt-outline: #86736b;
+  --bt-outline-variant: #d9c2b8;
+
+  --bt-success: #2d6a4f;
+  --bt-on-success: #ffffff;
+  --bt-warning: #9a5b13;
+  --bt-on-warning: #ffffff;
+  --bt-error: #ba1a1a;
+  --bt-on-error: #ffffff;
+}
+
+[data-atmosphere="editorial-dark"] {
+  --bt-surface: #19120f;
+  --bt-surface-container-lowest: #130d0a;
+  --bt-surface-container-low: #211a17;
+  --bt-surface-container: #251e1b;
+  --bt-surface-container-high: #302825;
+  --bt-surface-container-highest: #3b332f;
+  --bt-on-surface: #eee0da;
+  --bt-on-surface-variant: #d9c2b8;
+
+  --bt-primary: #ffb693;
+  --bt-on-primary: #552001;
+  --bt-primary-container: #8c4a27;
+  --bt-on-primary-container: #ffc9b0;
+
+  --bt-secondary: #ebbca7;
+  --bt-on-secondary: #46291b;
+  --bt-secondary-container: #603f2f;
+  --bt-on-secondary-container: #d9ab97;
+
+  --bt-tertiary: #87d2df;
+  --bt-on-tertiary: #00363d;
+  --bt-tertiary-container: #006671;
+  --bt-on-tertiary-container: #95e1ed;
+
+  --bt-outline: #a18c84;
+  --bt-outline-variant: #53433c;
+
+  --bt-success: #52b788;
+  --bt-on-success: #0b2418;
+  --bt-warning: #e09f3e;
+  --bt-on-warning: #2b1a02;
+  --bt-error: #ffb4ab;
+  --bt-on-error: #690005;
+}
+
+[data-atmosphere="fantasia"] {
+  --bt-surface: #121b17;
+  --bt-surface-container-lowest: #0d1411;
+  --bt-surface-container-low: #17231e;
+  --bt-surface-container: #1b2822;
+  --bt-surface-container-high: #23332c;
+  --bt-surface-container-highest: #2c3f36;
+  --bt-on-surface: #ede9df;
+  --bt-on-surface-variant: #b8b4a6;
+
+  --bt-primary: #d9a84e;
+  --bt-on-primary: #211704;
+  --bt-primary-container: #b78935;
+  --bt-on-primary-container: #fff2d6;
+
+  --bt-secondary: #8ea896;
+  --bt-on-secondary: #102016;
+  --bt-secondary-container: #24392f;
+  --bt-on-secondary-container: #e8e1ce;
+
+  --bt-tertiary: #d9a84e;
+  --bt-on-tertiary: #211704;
+  --bt-tertiary-container: #3a2e14;
+  --bt-on-tertiary-container: #f5d89a;
+
+  --bt-outline: #4d6b5c;
+  --bt-outline-variant: #31473c;
+
+  --bt-success: #52b788;
+  --bt-on-success: #0b2418;
+  --bt-warning: #e0a958;
+  --bt-on-warning: #211704;
+  --bt-error: #f28482;
+  --bt-on-error: #330c0c;
+}
+
+[data-atmosphere="scifi"] {
+  --bt-surface: #0f171e;
+  --bt-surface-container-lowest: #0a1015;
+  --bt-surface-container-low: #141f28;
+  --bt-surface-container: #18242e;
+  --bt-surface-container-high: #20303d;
+  --bt-surface-container-highest: #293c4c;
+  --bt-on-surface: #e6f1f5;
+  --bt-on-surface-variant: #9bb3c2;
+
+  --bt-primary: #5ce1e6;
+  --bt-on-primary: #062326;
+  --bt-primary-container: #28a9b0;
+  --bt-on-primary-container: #e0fbff;
+
+  --bt-secondary: #7ea8be;
+  --bt-on-secondary: #0b1c26;
+  --bt-secondary-container: #1f3442;
+  --bt-on-secondary-container: #d2ebf5;
+
+  --bt-tertiary: #5ce1e6;
+  --bt-on-tertiary: #062326;
+  --bt-tertiary-container: #153840;
+  --bt-on-tertiary-container: #b8f6f9;
+
+  --bt-outline: #425d73;
+  --bt-outline-variant: #2c4050;
+
+  --bt-success: #4dd4ac;
+  --bt-on-success: #04241b;
+  --bt-warning: #f0b45b;
+  --bt-on-warning: #291a03;
+  --bt-error: #ff8a8a;
+  --bt-on-error: #380909;
+}
+
+[data-atmosphere="misterio"] {
+  --bt-surface: #1c1f26;
+  --bt-surface-container-lowest: #15181e;
+  --bt-surface-container-low: #21252e;
+  --bt-surface-container: #262b35;
+  --bt-surface-container-high: #303642;
+  --bt-surface-container-highest: #3a4250;
+  --bt-on-surface: #ece8e1;
+  --bt-on-surface-variant: #b4b0a8;
+
+  --bt-primary: #e0a958;
+  --bt-on-primary: #241805;
+  --bt-primary-container: #b5833a;
+  --bt-on-primary-container: #fff2dc;
+
+  --bt-secondary: #9aa3b2;
+  --bt-on-secondary: #151921;
+  --bt-secondary-container: #313845;
+  --bt-on-secondary-container: #e8e2d8;
+
+  --bt-tertiary: #e0a958;
+  --bt-on-tertiary: #241805;
+  --bt-tertiary-container: #3d311c;
+  --bt-on-tertiary-container: #f5d8a8;
+
+  --bt-outline: #586375;
+  --bt-outline-variant: #3f4756;
+
+  --bt-success: #62b68c;
+  --bt-on-success: #0b2418;
+  --bt-warning: #e0a958;
+  --bt-on-warning: #241805;
+  --bt-error: #f08a8a;
+  --bt-on-error: #360b0b;
+}
+
+[data-atmosphere="terror"] {
+  --bt-surface: #140e10;
+  --bt-surface-container-lowest: #0e090b;
+  --bt-surface-container-low: #1b1215;
+  --bt-surface-container: #211619;
+  --bt-surface-container-high: #2b1d21;
+  --bt-surface-container-highest: #36252a;
+  --bt-on-surface: #f2e6e8;
+  --bt-on-surface-variant: #c4a8ae;
+
+  --bt-primary: #e86a75;
+  --bt-on-primary: #2b080d;
+  --bt-primary-container: #b54550;
+  --bt-on-primary-container: #ffe4e7;
+
+  --bt-secondary: #b58b94;
+  --bt-on-secondary: #241115;
+  --bt-secondary-container: #382228;
+  --bt-on-secondary-container: #f0dce0;
+
+  --bt-tertiary: #e86a75;
+  --bt-on-tertiary: #2b080d;
+  --bt-tertiary-container: #451c22;
+  --bt-on-tertiary-container: #ffc4ca;
+
+  --bt-outline: #66424c;
+  --bt-outline-variant: #452c33;
+
+  --bt-success: #5ea882;
+  --bt-on-success: #0a2115;
+  --bt-warning: #e3a256;
+  --bt-on-warning: #291704;
+  --bt-error: #ff8c96;
+  --bt-on-error: #38070d;
+}
+
+@theme {
+  --color-surface: var(--bt-surface);
+  --color-surface-container-lowest: var(--bt-surface-container-lowest);
+  --color-surface-container-low: var(--bt-surface-container-low);
+  --color-surface-container: var(--bt-surface-container);
+  --color-surface-container-high: var(--bt-surface-container-high);
+  --color-surface-container-highest: var(--bt-surface-container-highest);
+  --color-on-surface: var(--bt-on-surface);
+  --color-on-surface-variant: var(--bt-on-surface-variant);
+
+  --color-primary: var(--bt-primary);
+  --color-on-primary: var(--bt-on-primary);
+  --color-primary-container: var(--bt-primary-container);
+  --color-on-primary-container: var(--bt-on-primary-container);
+
+  --color-secondary: var(--bt-secondary);
+  --color-on-secondary: var(--bt-on-secondary);
+  --color-secondary-container: var(--bt-secondary-container);
+  --color-on-secondary-container: var(--bt-on-secondary-container);
+
+  --color-tertiary: var(--bt-tertiary);
+  --color-on-tertiary: var(--bt-on-tertiary);
+  --color-tertiary-container: var(--bt-tertiary-container);
+  --color-on-tertiary-container: var(--bt-on-tertiary-container);
+
+  --color-outline: var(--bt-outline);
+  --color-outline-variant: var(--bt-outline-variant);
+
+  --color-success: var(--bt-success);
+  --color-on-success: var(--bt-on-success);
+  --color-warning: var(--bt-warning);
+  --color-on-warning: var(--bt-on-warning);
+  --color-error: var(--bt-error);
+  --color-on-error: var(--bt-on-error);
+
+  --font-headline: "Crimson Pro", Georgia, serif;
+  --font-sans: "Commissioner", system-ui, -apple-system, sans-serif;
+  --font-mono: "Source Code Pro", ui-monospace, monospace;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    color: var(--bt-on-surface);
+    background-color: var(--bt-surface);
+  }
+
+  body,
+  aside,
+  main,
+  nav,
+  article,
+  section {
+    transition-property: background-color, border-color, color;
+    transition-duration: 300ms;
+    transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
+  }
+}
+
+.material-symbols-outlined {
+  font-family: "Material Symbols Outlined";
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
