@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => {
       tailwindcss(),
       VitePWA({
         registerType: 'autoUpdate',
-        includeAssets: ['icon.svg'],
+        includeAssets: ['favicon.png', 'icon.svg'],
         manifest: {
           name: 'BookTime',
           short_name: 'BookTime',
@@ -28,9 +28,9 @@ export default defineConfig(({ mode }) => {
           start_url: base,
           icons: [
             {
-              src: 'icon.svg',
-              sizes: 'any',
-              type: 'image/svg+xml',
+              src: 'favicon.png',
+              sizes: '507x492',
+              type: 'image/png',
               purpose: 'any maskable',
             },
           ],
