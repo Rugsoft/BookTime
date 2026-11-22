@@ -1,4 +1,4 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { AppShell } from '@/ui/layouts/AppShell';
 import { AddBookPage } from '@/ui/pages/AddBookPage';
 import { LibraryPage } from '@/ui/pages/LibraryPage';
@@ -7,7 +7,7 @@ import { TimerPage } from '@/ui/pages/TimerPage';
 
 export function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         <Route element={<AppShell />}>
           <Route index element={<TimerPage />} />
@@ -17,6 +17,6 @@ export function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 }

@@ -4,7 +4,10 @@ import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 import { defineConfig } from 'vitest/config';
 
+const base = process.env.VITE_BASE_PATH || '/';
+
 export default defineConfig({
+  base,
   plugins: [
     react(),
     tailwindcss(),
@@ -19,7 +22,8 @@ export default defineConfig({
         theme_color: '#6F3312',
         background_color: '#FFF8F6',
         display: 'standalone',
-        start_url: '/',
+        scope: base,
+        start_url: base,
         icons: [
           {
             src: 'icon.svg',
