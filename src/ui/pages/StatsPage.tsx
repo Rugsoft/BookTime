@@ -1,5 +1,5 @@
 import { useLiveQuery } from 'dexie-react-hooks';
-import { useMemo, useState, type FormEvent } from 'react';
+import { useMemo, useRef, useState, type FormEvent } from 'react';
 import type { ReadingSession } from '@/domain/models';
 import { formatDuration } from '@/domain/planner';
 import {
@@ -68,6 +68,8 @@ export function StatsPage() {
     formFromDate(new Date(), 30),
   );
   const [formError, setFormError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const savingRef = useRef(false);
 
   function openNewForm() {
     setEditingManualId(null);
@@ -108,6 +110,9 @@ export function StatsPage() {
       setFormError('Elegí un libro para la sesión.');
       return;
     }
+    if (savingRef.current) return;
+    savingRef.current = true;
+    setSaving(true);
     try {
       if (editingManualId) {
         await updateManualSession(editingManualId, input);
@@ -119,6 +124,9 @@ export function StatsPage() {
       setFormError(
         error instanceof Error ? error.message : 'No se pudo guardar la sesión.',
       );
+    } finally {
+      savingRef.current = false;
+      setSaving(false);
     }
   }
 
@@ -321,7 +329,8 @@ export function StatsPage() {
             <div className="flex gap-2 sm:col-span-2 lg:col-span-4 lg:justify-end">
               <button
                 type="submit"
-                className="rounded-full bg-primary px-4 py-2 text-xs font-medium text-on-primary hover:bg-primary-container"
+                disabled={saving}
+                className="rounded-full bg-primary px-4 py-2 text-xs font-medium text-on-primary hover:bg-primary-container disabled:opacity-50"
               >
                 {editingManualId ? 'Guardar cambios' : 'Guardar sesión'}
               </button>
