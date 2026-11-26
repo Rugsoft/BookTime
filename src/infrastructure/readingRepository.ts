@@ -1,3 +1,7 @@
+import {
+  buildManualSession,
+  type ManualSessionInput,
+} from '@/domain/manualSession';
 import type { Book, BookStatus, GenreId, SessionMode } from '@/domain/models';
 import { deductReadingSession } from '@/domain/planner';
 import { db } from './db';
@@ -129,4 +133,77 @@ export async function recordReadingSession(
     updatedRemainingMinutes,
     bookCompleted,
   };
+}
+
+export interface ManualSessionRecordInput extends ManualSessionInput {
+  bookId: string;
+}
+
+/** Applies a signed minute delta, reopening a book that regains remaining time. */
+async function adjustBookTime(bookId: string, minutesDelta: number): Promise<void> {
+  const book = await db.books.get(bookId);
+  if (!book || book.remainingMinutes === undefined) return;
+
+  const remainingMinutes = Math.max(0, book.remainingMinutes + minutesDelta);
+  const completed = remainingMinutes === 0;
+
+  await db.books.update(bookId, {
+    remainingMinutes,
+    ...(book.status === 'completed' && !completed
+      ? { status: 'reading' as BookStatus, completedAt: undefined }
+      : {}),
+    ...(book.status !== 'completed' && completed
+      ? { status: 'completed' as BookStatus, completedAt: new Date().toISOString() }
+      : {}),
+  });
+}
+
+export async function addManualSession(
+  input: ManualSessionRecordInput,
+): Promise<void> {
+  const session = buildManualSession(input);
+  await recordReadingSession({
+    bookId: input.bookId,
+    startedAt: session.startedAt,
+    endedAt: session.endedAt,
+    durationMinutes: session.durationMinutes,
+    mode: 'manual',
+  });
+}
+
+export async function updateManualSession(
+  id: string,
+  input: ManualSessionRecordInput,
+): Promise<void> {
+  const existing = await db.sessions.get(id);
+  if (!existing || existing.mode !== 'manual') {
+    throw new Error('Solo se pueden editar sesiones manuales.');
+  }
+
+  const updated = buildManualSession(input, id);
+  await db.transaction('rw', db.sessions, db.books, async () => {
+    await db.sessions.put({ ...existing, ...updated, bookId: input.bookId });
+
+    if (existing.bookId && existing.bookId !== input.bookId) {
+      await adjustBookTime(existing.bookId, existing.durationMinutes);
+    }
+    const delta =
+      existing.bookId === input.bookId
+        ? existing.durationMinutes - updated.durationMinutes
+        : -updated.durationMinutes;
+    await adjustBookTime(input.bookId, delta);
+  });
+}
+
+export async function deleteManualSession(id: string): Promise<void> {
+  const existing = await db.sessions.get(id);
+  if (!existing || existing.mode !== 'manual') {
+    throw new Error('Solo se pueden borrar sesiones manuales.');
+  }
+  await db.transaction('rw', db.sessions, db.books, async () => {
+    await db.sessions.delete(id);
+    if (existing.bookId) {
+      await adjustBookTime(existing.bookId, existing.durationMinutes);
+    }
+  });
 }

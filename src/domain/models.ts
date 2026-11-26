@@ -17,7 +17,7 @@ export type GenreId =
   | 'general';
 
 export type BookStatus = 'reading' | 'completed' | 'paused';
-export type SessionMode = 'guided' | 'free';
+export type SessionMode = 'guided' | 'free' | 'manual';
 
 export interface Book {
   id: string;
