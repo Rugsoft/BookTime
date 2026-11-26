@@ -70,6 +70,7 @@ export function StatsPage() {
   const [formError, setFormError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const savingRef = useRef(false);
+  const selectedManualBook = books.find((book) => book.id === manualForm.bookId);
 
   function openNewForm() {
     setEditingManualId(null);
@@ -285,6 +286,13 @@ export function StatsPage() {
                   </option>
                 ))}
               </select>
+              {selectedManualBook?.remainingMinutes === undefined &&
+                manualForm.bookId && (
+                  <span className="text-[11px] font-normal text-on-surface-variant">
+                    Sin tiempo de e-reader: sumará a las estadísticas pero no
+                    descontará del libro.
+                  </span>
+                )}
             </label>
             <label className="flex flex-col gap-1 text-xs font-medium text-on-surface-variant">
               Minutos
