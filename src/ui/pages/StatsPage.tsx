@@ -20,17 +20,23 @@ interface ManualForm {
   durationMinutes: string;
   date: string;
   time: string;
+  bookId: string;
 }
 
 function pad2(value: number): string {
   return String(value).padStart(2, '0');
 }
 
-function formFromDate(date: Date, durationMinutes: number): ManualForm {
+function formFromDate(
+  date: Date,
+  durationMinutes: number,
+  bookId = '',
+): ManualForm {
   return {
     durationMinutes: String(durationMinutes),
     date: `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}`,
     time: `${pad2(date.getHours())}:${pad2(date.getMinutes())}`,
+    bookId,
   };
 }
 
@@ -73,7 +79,11 @@ export function StatsPage() {
   function openEditForm(session: ReadingSession) {
     setEditingManualId(session.id);
     setManualForm(
-      formFromDate(new Date(session.endedAt), session.durationMinutes),
+      formFromDate(
+        new Date(session.endedAt),
+        session.durationMinutes,
+        session.bookId ?? '',
+      ),
     );
     setFormError(null);
     setShowManualForm(true);
@@ -92,7 +102,12 @@ export function StatsPage() {
       durationMinutes: Number.parseInt(manualForm.durationMinutes, 10),
       date: manualForm.date,
       time: manualForm.time,
+      bookId: manualForm.bookId,
     };
+    if (!input.bookId) {
+      setFormError('Elegí un libro para la sesión.');
+      return;
+    }
     try {
       if (editingManualId) {
         await updateManualSession(editingManualId, input);
@@ -243,8 +258,26 @@ export function StatsPage() {
         {showManualForm && (
           <form
             onSubmit={(event) => void handleManualSubmit(event)}
-            className="grid gap-3 rounded-xl border border-outline-variant bg-surface-container-low p-4 sm:grid-cols-[auto_1fr_1fr] sm:items-end"
+            className="grid gap-3 rounded-xl border border-outline-variant bg-surface-container-low p-4 sm:grid-cols-2 lg:grid-cols-4 sm:items-end"
           >
+            <label className="flex flex-col gap-1 text-xs font-medium text-on-surface-variant">
+              Libro
+              <select
+                required
+                value={manualForm.bookId}
+                onChange={(event) =>
+                  setManualForm((form) => ({ ...form, bookId: event.target.value }))
+                }
+                className="rounded-lg border border-outline-variant bg-surface-container-lowest px-3 py-2 text-sm text-on-surface focus:border-primary focus:outline-none"
+              >
+                <option value="">Elegí un libro</option>
+                {books.map((book) => (
+                  <option key={book.id} value={book.id}>
+                    {book.title}
+                  </option>
+                ))}
+              </select>
+            </label>
             <label className="flex flex-col gap-1 text-xs font-medium text-on-surface-variant">
               Minutos
               <input
@@ -285,7 +318,7 @@ export function StatsPage() {
                 className="rounded-lg border border-outline-variant bg-surface-container-lowest px-3 py-2 text-sm text-on-surface focus:border-primary focus:outline-none"
               />
             </label>
-            <div className="flex gap-2 sm:col-span-3 sm:justify-end">
+            <div className="flex gap-2 sm:col-span-2 lg:col-span-4 lg:justify-end">
               <button
                 type="submit"
                 className="rounded-full bg-primary px-4 py-2 text-xs font-medium text-on-primary hover:bg-primary-container"
