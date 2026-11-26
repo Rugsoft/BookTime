@@ -33,7 +33,7 @@ const GENRES = new Set<GenreId>([
   'general',
 ]);
 const STATUSES = new Set<BookStatus>(['reading', 'completed', 'paused']);
-const MODES = new Set<SessionMode>(['guided', 'free']);
+const MODES = new Set<SessionMode>(['guided', 'free', 'manual']);
 
 type UnknownRecord = Record<string, unknown>;
 

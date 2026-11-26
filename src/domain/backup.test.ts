@@ -130,3 +130,20 @@ describe('parseBackup', () => {
     ).toThrow(BackupError);
   });
 });
+
+describe('manual sessions in backups', () => {
+  it('round-trips a session with mode manual', () => {
+    const manualSession: ReadingSession = {
+      id: 'manual-1',
+      startedAt: '2026-01-02T15:00:00.000Z',
+      endedAt: '2026-01-02T15:35:00.000Z',
+      durationMinutes: 35,
+      mode: 'manual',
+    };
+
+    expect(
+      parseBackup(JSON.stringify({ ...validBackup, sessions: [manualSession] }))
+        .sessions,
+    ).toEqual([manualSession]);
+  });
+});

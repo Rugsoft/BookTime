@@ -28,7 +28,7 @@ Fast, self-contained improvements that immediately elevate daily usability witho
 
 ### Tier 1 Checklist
 - [x] Local JSON export/import backup for IndexedDB (`books` + `sessions`)
-- [ ] Manual reading session entry, edit, and deletion
+- [x] Manual reading session entry, edit, and deletion
 - [ ] Distraction-free Focus Mode with Screen Wake Lock API
 - [ ] Live `document.title` countdown + Web Notification on completion
 - [ ] Google Books API fallback in `src/infrastructure/bookSearch.ts`

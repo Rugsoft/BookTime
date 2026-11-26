@@ -1,4 +1,14 @@
-import type { Book, BookStatus, GenreId, SessionMode } from '@/domain/models';
+import {
+  buildManualSession,
+  type ManualSessionInput,
+} from '@/domain/manualSession';
+import type {
+  Book,
+  BookStatus,
+  GenreId,
+  ReadingSession,
+  SessionMode,
+} from '@/domain/models';
 import { deductReadingSession } from '@/domain/planner';
 import { db } from './db';
 
@@ -129,4 +139,32 @@ export async function recordReadingSession(
     updatedRemainingMinutes,
     bookCompleted,
   };
+}
+
+/** Manual sessions only feed stats; a book's remaining time stays user-owned. */
+export async function addManualSession(
+  input: ManualSessionInput,
+): Promise<ReadingSession> {
+  const session = buildManualSession(input);
+  await db.sessions.add(session);
+  return session;
+}
+
+export async function updateManualSession(
+  id: string,
+  input: ManualSessionInput,
+): Promise<void> {
+  const existing = await db.sessions.get(id);
+  if (!existing || existing.mode !== 'manual') {
+    throw new Error('Solo se pueden editar sesiones manuales.');
+  }
+  await db.sessions.put({ ...existing, ...buildManualSession(input, id) });
+}
+
+export async function deleteManualSession(id: string): Promise<void> {
+  const existing = await db.sessions.get(id);
+  if (!existing || existing.mode !== 'manual') {
+    throw new Error('Solo se pueden borrar sesiones manuales.');
+  }
+  await db.sessions.delete(id);
 }
