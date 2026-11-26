@@ -13,6 +13,7 @@ const NAV_ITEMS = [
   { to: '/', label: 'Temporizador', mobileLabel: 'Timer', icon: 'timer' },
   { to: '/library', label: 'Biblioteca', mobileLabel: 'Biblioteca', icon: 'library_books' },
   { to: '/stats', label: 'Estadísticas', mobileLabel: 'Stats', icon: 'bar_chart' },
+  { to: '/settings', label: 'Ajustes', mobileLabel: 'Ajustes', icon: 'settings' },
 ] as const;
 
 export function AppShell() {
